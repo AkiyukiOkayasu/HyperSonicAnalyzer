@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
+
 #include <array>
 #include <atomic>
 
@@ -10,7 +11,7 @@ class HyperSonicAnalyzerProcessor : public juce::AudioProcessor
 public:
     // FFTサイズ: 65536 サンプル (order = 16)
     static constexpr int fftOrder = 16;
-    static constexpr int fftSize = 1 << fftOrder;  // 65536
+    static constexpr int fftSize = 1 << fftOrder;   // 65536
     static constexpr int numBins = fftSize / 2 + 1; // 32769 bins
 
     HyperSonicAnalyzerProcessor();
@@ -46,13 +47,13 @@ public:
     const std::array<float, numBins>& getMagnitudeData() const { return magnitudeDataOutput; }
     bool isNewDataAvailable() const { return newDataAvailable.load(); }
     void resetNewDataFlag() { newDataAvailable.store(false); }
-    
+
     double getCurrentSampleRate() const { return currentSampleRate.load(); }
     float getNyquistFrequency() const { return static_cast<float>(currentSampleRate.load() / 2.0); }
 
     // パラメータ
     juce::AudioProcessorValueTreeState& getAPVTS() { return apvts; }
-    
+
     // FFT処理（UIスレッドから呼び出す）
     void processFFT();
 
@@ -62,24 +63,24 @@ private:
 
     // FFT
     juce::dsp::FFT fft;
-    
+
     // Blackman-Harris 窓関数
     std::array<float, fftSize> windowFunction;
     void createBlackmanHarrisWindow();
-    
+
     // FIFOバッファ（プッシュのみ、ロックフリー）
     std::array<float, fftSize> fifoBuffer;
-    std::atomic<int> fifoWriteIndex { 0 };
-    
+    std::atomic<int> fifoWriteIndex{0};
+
     // FFT処理用バッファ（UIスレッドで処理）
     std::array<float, fftSize> fftInputBuffer;
     std::array<float, fftSize * 2> fftData;
     std::array<float, numBins> magnitudeDataOutput;
-    
+
     // FFT準備完了フラグ
-    std::atomic<bool> fftDataReady { false };
-    std::atomic<bool> newDataAvailable { false };
-    std::atomic<double> currentSampleRate { 44100.0 };
+    std::atomic<bool> fftDataReady{false};
+    std::atomic<bool> newDataAvailable{false};
+    std::atomic<double> currentSampleRate{44100.0};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HyperSonicAnalyzerProcessor)
 };

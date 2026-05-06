@@ -14,19 +14,19 @@ public:
 
 private:
     HyperSonicAnalyzerProcessor& audioProcessor;
-    
+
     SpectralAnalyzer spectralAnalyzer;
-    
+
     // 振幅範囲設定用ダイヤル
     juce::Slider minDbSlider;
     juce::Slider maxDbSlider;
-    
+
     juce::Label minDbLabel;
     juce::Label maxDbLabel;
-    
+
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> minDbAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> maxDbAttachment;
-    
+
     // タイトルラベル
     juce::Label titleLabel;
 
