@@ -18,14 +18,15 @@ FetchContent_MakeAvailable(JUCE)
 
 # プラグインの定義
 juce_add_plugin(HyperSonicAnalyzer
-    COMPANY_NAME "AkiyukiAudio"
+    COMPANY_NAME "Groundless Electronics"
+    COMPANY_WEBSITE "https://groundlesselectronics.com"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD FALSE
-    PLUGIN_MANUFACTURER_CODE Akyu
+    PLUGIN_MANUFACTURER_CODE Grls
     PLUGIN_CODE Hysa
     FORMATS VST3 Standalone
     PRODUCT_NAME "HyperSonic Analyzer"
