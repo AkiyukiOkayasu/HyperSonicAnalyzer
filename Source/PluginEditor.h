@@ -27,10 +27,6 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> minDbAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> maxDbAttachment;
     
-    // スケール切替ボタン
-    juce::ToggleButton linearScaleButton;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> linearScaleAttachment;
-    
     // タイトルラベル
     juce::Label titleLabel;
 

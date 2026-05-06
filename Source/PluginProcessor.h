@@ -43,7 +43,7 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
     // スペクトラムデータへのアクセス
-    const std::array<float, numBins>& getMagnitudeData() const { return magnitudeData; }
+    const std::array<float, numBins>& getMagnitudeData() const { return magnitudeDataOutput; }
     bool isNewDataAvailable() const { return newDataAvailable.load(); }
     void resetNewDataFlag() { newDataAvailable.store(false); }
     
@@ -52,6 +52,9 @@ public:
 
     // パラメータ
     juce::AudioProcessorValueTreeState& getAPVTS() { return apvts; }
+    
+    // FFT処理（UIスレッドから呼び出す）
+    void processFFT();
 
 private:
     juce::AudioProcessorValueTreeState apvts;
@@ -64,15 +67,17 @@ private:
     std::array<float, fftSize> windowFunction;
     void createBlackmanHarrisWindow();
     
-    // FFTバッファ
+    // FIFOバッファ（プッシュのみ、ロックフリー）
+    std::array<float, fftSize> fifoBuffer;
+    std::atomic<int> fifoWriteIndex { 0 };
+    
+    // FFT処理用バッファ（UIスレッドで処理）
+    std::array<float, fftSize> fftInputBuffer;
     std::array<float, fftSize * 2> fftData;
-    std::array<float, numBins> magnitudeData;
+    std::array<float, numBins> magnitudeDataOutput;
     
-    // 入力バッファ（リングバッファ）
-    std::array<float, fftSize> inputBuffer;
-    int inputBufferIndex = 0;
-    int samplesCollected = 0;
-    
+    // FFT準備完了フラグ
+    std::atomic<bool> fftDataReady { false };
     std::atomic<bool> newDataAvailable { false };
     std::atomic<double> currentSampleRate { 44100.0 };
 
