@@ -208,7 +208,7 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
     
     // スペクトラムライン
     g.setColour(juce::Colour(0, 200, 255));
-    g.strokePath(spectrumPath, juce::PathStrokeType(1.5f));
+    g.strokePath(spectrumPath, juce::PathStrokeType(0.75f));
     
     // ラベルを描画
     drawFrequencyLabels(g, width, height, nyquist);
