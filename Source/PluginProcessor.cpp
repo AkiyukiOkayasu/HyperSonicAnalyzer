@@ -40,6 +40,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout HyperSonicAnalyzerProcessor:
         0.0f
     ));
     
+    // リニアスケール切替
+    params.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID("linearScale", 1),
+        "Linear Scale",
+        false
+    ));
+    
     return { params.begin(), params.end() };
 }
 

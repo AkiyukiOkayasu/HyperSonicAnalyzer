@@ -22,6 +22,9 @@ public:
 
     void setMinDb(float minDb) { minDbValue = minDb; }
     void setMaxDb(float maxDb) { maxDbValue = maxDb; }
+    
+    void setLinearScale(bool linear) { useLinearScale = linear; }
+    bool isLinearScale() const { return useLinearScale; }
 
 private:
     HyperSonicAnalyzerProcessor& audioProcessor;
@@ -31,10 +34,12 @@ private:
     float minDbValue = -120.0f;
     float maxDbValue = 0.0f;
     
+    bool useLinearScale = false;
+    
     // スムージング係数
     static constexpr float smoothingCoeff = 0.7f;
     
-    // 周波数をX座標に変換（対数スケール）
+    // 周波数をX座標に変換
     float frequencyToX(float frequency, float width, float minFreq, float maxFreq) const;
     
     // dB値をY座標に変換

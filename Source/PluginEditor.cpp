@@ -58,9 +58,22 @@ HyperSonicAnalyzerEditor::HyperSonicAnalyzerEditor(HyperSonicAnalyzerProcessor& 
     maxDbAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), "maxDb", maxDbSlider);
     
+    // リニアスケール切替ボタン
+    linearScaleButton.setButtonText("Linear Scale");
+    linearScaleButton.setColour(juce::ToggleButton::textColourId, juce::Colours::lightgrey);
+    linearScaleButton.setColour(juce::ToggleButton::tickColourId, juce::Colours::orange);
+    linearScaleButton.onClick = [this]() {
+        spectralAnalyzer.setLinearScale(linearScaleButton.getToggleState());
+    };
+    addAndMakeVisible(linearScaleButton);
+    
+    linearScaleAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), "linearScale", linearScaleButton);
+    
     // 初期値を反映
     spectralAnalyzer.setMinDb(static_cast<float>(minDbSlider.getValue()));
     spectralAnalyzer.setMaxDb(static_cast<float>(maxDbSlider.getValue()));
+    spectralAnalyzer.setLinearScale(linearScaleButton.getToggleState());
     
     // ウィンドウサイズ
     setSize(1000, 600);
@@ -106,4 +119,9 @@ void HyperSonicAnalyzerEditor::resized()
     auto maxDbArea = controlBounds.removeFromLeft(dialWidth);
     maxDbLabel.setBounds(maxDbArea.removeFromTop(20));
     maxDbSlider.setBounds(maxDbArea.removeFromTop(dialHeight));
+    
+    controlBounds.removeFromLeft(spacing);
+    
+    // リニアスケールボタン
+    linearScaleButton.setBounds(controlBounds.removeFromLeft(120).withHeight(30).withY(controlBounds.getY() + 35));
 }

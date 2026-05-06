@@ -33,14 +33,23 @@ void SpectralAnalyzer::timerCallback()
 
 float SpectralAnalyzer::frequencyToX(float frequency, float width, float minFreq, float maxFreq) const
 {
-    if (frequency <= 0.0f || minFreq <= 0.0f)
-        return 0.0f;
-    
-    float logMin = std::log10(minFreq);
-    float logMax = std::log10(maxFreq);
-    float logFreq = std::log10(frequency);
-    
-    return width * (logFreq - logMin) / (logMax - logMin);
+    if (useLinearScale)
+    {
+        // リニアスケール
+        return width * (frequency - minFreq) / (maxFreq - minFreq);
+    }
+    else
+    {
+        // 対数スケール
+        if (frequency <= 0.0f || minFreq <= 0.0f)
+            return 0.0f;
+        
+        float logMin = std::log10(minFreq);
+        float logMax = std::log10(maxFreq);
+        float logFreq = std::log10(frequency);
+        
+        return width * (logFreq - logMin) / (logMax - logMin);
+    }
 }
 
 float SpectralAnalyzer::dbToY(float db, float height) const
@@ -64,20 +73,40 @@ void SpectralAnalyzer::drawGrid(juce::Graphics& g, float width, float height, fl
 {
     g.setColour(juce::Colour(60, 60, 70));
     
-    // 周波数グリッド線（対数スケール）
-    std::vector<float> gridFreqs = { 10, 20, 50, 100, 200, 500, 
-                                      1000, 2000, 5000, 10000, 20000, 
-                                      50000, 100000, 200000, 384000 };
-    
-    float minFreq = 10.0f;
+    float minFreq = useLinearScale ? 0.0f : 10.0f;
     float maxFreq = nyquist;
     
-    for (float freq : gridFreqs)
+    if (useLinearScale)
     {
-        if (freq > nyquist) break;
+        // リニアスケール: 等間隔のグリッド
+        float step = nyquist / 10.0f;
+        // きりのいい数値に丸める
+        if (step > 50000) step = 50000;
+        else if (step > 20000) step = 20000;
+        else if (step > 10000) step = 10000;
+        else if (step > 5000) step = 5000;
+        else step = 1000;
         
-        float x = frequencyToX(freq, width, minFreq, maxFreq);
-        g.drawVerticalLine(static_cast<int>(x), 0.0f, height);
+        for (float freq = step; freq < nyquist; freq += step)
+        {
+            float x = frequencyToX(freq, width, minFreq, maxFreq);
+            g.drawVerticalLine(static_cast<int>(x), 0.0f, height);
+        }
+    }
+    else
+    {
+        // 対数スケール: 対数間隔のグリッド
+        std::vector<float> gridFreqs = { 10, 20, 50, 100, 200, 500, 
+                                          1000, 2000, 5000, 10000, 20000, 
+                                          50000, 100000, 200000, 384000 };
+        
+        for (float freq : gridFreqs)
+        {
+            if (freq > nyquist) break;
+            
+            float x = frequencyToX(freq, width, minFreq, maxFreq);
+            g.drawVerticalLine(static_cast<int>(x), 0.0f, height);
+        }
     }
     
     // dBグリッド線
@@ -98,21 +127,45 @@ void SpectralAnalyzer::drawFrequencyLabels(juce::Graphics& g, float width, float
     g.setColour(juce::Colours::lightgrey);
     g.setFont(11.0f);
     
-    std::vector<float> labelFreqs = { 20, 100, 1000, 10000, 20000, 100000, 200000 };
-    
-    float minFreq = 10.0f;
+    float minFreq = useLinearScale ? 0.0f : 10.0f;
     float maxFreq = nyquist;
     
-    for (float freq : labelFreqs)
+    if (useLinearScale)
     {
-        if (freq > nyquist) break;
+        // リニアスケール用のラベル
+        float step = nyquist / 10.0f;
+        if (step > 50000) step = 50000;
+        else if (step > 20000) step = 20000;
+        else if (step > 10000) step = 10000;
+        else if (step > 5000) step = 5000;
+        else step = 1000;
         
-        float x = frequencyToX(freq, width, minFreq, maxFreq);
-        juce::String label = formatFrequency(freq);
+        for (float freq = step; freq < nyquist; freq += step)
+        {
+            float x = frequencyToX(freq, width, minFreq, maxFreq);
+            juce::String label = formatFrequency(freq);
+            
+            g.drawText(label, 
+                       static_cast<int>(x) - 30, static_cast<int>(height) - 18, 
+                       60, 16, juce::Justification::centred);
+        }
+    }
+    else
+    {
+        // 対数スケール用のラベル
+        std::vector<float> labelFreqs = { 20, 100, 1000, 10000, 20000, 100000, 200000 };
         
-        g.drawText(label, 
-                   static_cast<int>(x) - 25, static_cast<int>(height) - 18, 
-                   50, 16, juce::Justification::centred);
+        for (float freq : labelFreqs)
+        {
+            if (freq > nyquist) break;
+            
+            float x = frequencyToX(freq, width, minFreq, maxFreq);
+            juce::String label = formatFrequency(freq);
+            
+            g.drawText(label, 
+                       static_cast<int>(x) - 25, static_cast<int>(height) - 18, 
+                       50, 16, juce::Justification::centred);
+        }
     }
     
     // ナイキスト周波数を常に表示
@@ -163,18 +216,23 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
     // スペクトラムを描画
     juce::Path spectrumPath;
     
-    float minFreq = 10.0f;
+    float minFreq = useLinearScale ? 0.0f : 10.0f;
     float maxFreq = nyquist;
     float binWidth = sampleRate / static_cast<float>(HyperSonicAnalyzerProcessor::fftSize);
     
     bool pathStarted = false;
     
-    for (int i = 1; i < numBins; ++i)
+    // リニアスケールの場合はDC(0Hz)から描画開始
+    int startBin = useLinearScale ? 0 : 1;
+    
+    for (int i = startBin; i < numBins; ++i)
     {
         float frequency = static_cast<float>(i) * binWidth;
         
-        if (frequency < minFreq || frequency > maxFreq)
+        if (!useLinearScale && frequency < minFreq)
             continue;
+        if (frequency > maxFreq)
+            break;
         
         float x = frequencyToX(frequency, width, minFreq, maxFreq);
         float y = dbToY(displayData[i], height);
@@ -214,11 +272,16 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
     drawFrequencyLabels(g, width, height, nyquist);
     drawDbLabels(g, width, height);
     
-    // サンプルレート表示
+    // サンプルレートとスケール表示
     g.setColour(juce::Colours::yellow);
     g.setFont(12.0f);
     juce::String srText = "Sample Rate: " + formatFrequency(sampleRate);
     g.drawText(srText, static_cast<int>(width) - 180, 5, 175, 20, juce::Justification::right);
+    
+    // スケール表示
+    juce::String scaleText = useLinearScale ? "Linear Scale" : "Log Scale";
+    g.setColour(juce::Colours::orange);
+    g.drawText(scaleText, static_cast<int>(width) - 180, 22, 175, 20, juce::Justification::right);
 }
 
 void SpectralAnalyzer::resized()
