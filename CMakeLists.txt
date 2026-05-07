@@ -61,3 +61,19 @@ target_link_libraries(HyperSonicAnalyzer
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
 )
+
+# Additional strict warnings for our source files
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_options(HyperSonicAnalyzer PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wconversion
+        -Wsign-conversion
+        -Wnull-dereference
+        -Wdouble-promotion
+        -Wformat=2
+        -Wimplicit-fallthrough
+    )
+endif()
