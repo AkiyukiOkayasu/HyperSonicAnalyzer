@@ -60,7 +60,7 @@ HyperSonicAnalyzerEditor::HyperSonicAnalyzerEditor(HyperSonicAnalyzerProcessor& 
 
     setSize(1000, 600);
     setResizable(true, true);
-    setResizeLimits(800, 500, 2000, 1200);
+    setResizeLimits(800, 500, 4096, 2160);
 }
 
 HyperSonicAnalyzerEditor::~HyperSonicAnalyzerEditor() = default;
