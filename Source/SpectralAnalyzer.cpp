@@ -259,6 +259,11 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
 
     bool pathStarted = false;
 
+    // ピクセルごとに最大値を描画（高域の密集を軽減）
+    int lastPixelX = -1;
+    float maxDbForPixel = -std::numeric_limits<float>::infinity();
+    float pixelX = 0.0f;
+
     for (size_t i = 1; i < static_cast<size_t>(numBins); ++i)
     {
         float frequency = static_cast<float>(i) * binWidth;
@@ -269,16 +274,53 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
             break;
 
         float x = frequencyToX(frequency, width, minFreq, maxFreq);
-        float y = dbToY(displayData[i], height);
+        int currentPixelX = static_cast<int>(x);
+        float db = displayData[i];
 
+        if (currentPixelX == lastPixelX)
+        {
+            // 同じピクセル内では最大値を追跡
+            if (db > maxDbForPixel)
+            {
+                maxDbForPixel = db;
+            }
+        }
+        else
+        {
+            // 前のピクセルの最大値を描画
+            if (lastPixelX >= 0)
+            {
+                float y = dbToY(maxDbForPixel, height);
+                if (!pathStarted)
+                {
+                    spectrumPath.startNewSubPath(pixelX, y);
+                    pathStarted = true;
+                }
+                else
+                {
+                    spectrumPath.lineTo(pixelX, y);
+                }
+            }
+
+            // 新しいピクセルの追跡を開始
+            lastPixelX = currentPixelX;
+            pixelX = x;
+            maxDbForPixel = db;
+        }
+    }
+
+    // 最後のピクセルを描画
+    if (lastPixelX >= 0)
+    {
+        float y = dbToY(maxDbForPixel, height);
         if (!pathStarted)
         {
-            spectrumPath.startNewSubPath(x, y);
+            spectrumPath.startNewSubPath(pixelX, y);
             pathStarted = true;
         }
         else
         {
-            spectrumPath.lineTo(x, y);
+            spectrumPath.lineTo(pixelX, y);
         }
     }
 
@@ -296,7 +338,7 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
     }
 
     g.setColour(juce::Colour(0, 200, 255));
-    g.strokePath(spectrumPath, juce::PathStrokeType(0.75f));
+    g.strokePath(spectrumPath, juce::PathStrokeType(0.5f));
 
     drawCrosshair(g, width, height, nyquist);
 
