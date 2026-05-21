@@ -9,10 +9,10 @@
 class HyperSonicAnalyzerProcessor : public juce::AudioProcessor
 {
 public:
-    // FFTサイズ: 65536 サンプル (order = 16)
-    static constexpr int fftOrder = 16;
-    static constexpr int fftSize = 1 << fftOrder;   // 65536
-    static constexpr int numBins = fftSize / 2 + 1; // 32769 bins
+    // FFTサイズ: 131072 サンプル (order = 17)
+    static constexpr int fftOrder = 17;
+    static constexpr int fftSize = 1 << fftOrder;   // 131072
+    static constexpr int numBins = fftSize / 2 + 1; // 65537 bins
 
     HyperSonicAnalyzerProcessor();
     ~HyperSonicAnalyzerProcessor() override;
