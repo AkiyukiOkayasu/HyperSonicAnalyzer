@@ -1,6 +1,7 @@
 #include "SpectralAnalyzer.h"
 
 #include "PluginProcessor.h"
+#include "juce_graphics/juce_graphics.h"
 
 #include <cmath>
 
@@ -127,9 +128,9 @@ void SpectralAnalyzer::drawGrid(juce::Graphics& g, float width, float height, fl
     const std::array<float, 7> labelFreqs = {20, 100, 1000, 10000, 20000, 100000, 200000};
 
     const std::array<float, 36> subFreqs = {
-        10,   30,   40,   50,   60,   70,   80,   90,   200,   300,  400,  500,
-        600,  700,  800,  900,  2000,  3000, 4000, 5000, 6000,  7000, 8000, 9000,
-        20000,30000,40000,50000,60000, 70000,80000,90000,300000,384000};
+        10,    30,    40,    50,    60,    70,    80,    90,    200,    300,   400,  500,
+        600,   700,   800,   900,   2000,  3000,  4000,  5000,  6000,   7000,  8000, 9000,
+        20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 300000, 384000};
 
     g.setColour(juce::Colour(35, 35, 45));
     for (float freq : subFreqs)
@@ -336,14 +337,11 @@ void SpectralAnalyzer::paint(juce::Graphics& g)
         fillPath.lineTo(0.0f, height);
         fillPath.closeSubPath();
 
-        g.setGradientFill(juce::ColourGradient(juce::Colour(0, 150, 255).withAlpha(0.5f), 0.0f,
-                                               0.0f, juce::Colour(0, 50, 150).withAlpha(0.2f), 0.0f,
-                                               height, false));
+        g.setGradientFill(juce::ColourGradient(
+            juce::Colours::mediumspringgreen.withAlpha(0.5f), 0.0f, 0.0f,
+            juce::Colours::mediumspringgreen.withAlpha(0.2f), 0.0f, height, false));
         g.fillPath(fillPath);
     }
-
-    g.setColour(juce::Colour(0, 200, 255));
-    g.strokePath(spectrumPath, juce::PathStrokeType(0.5f));
 
     drawCrosshair(g, width, height, nyquist);
 

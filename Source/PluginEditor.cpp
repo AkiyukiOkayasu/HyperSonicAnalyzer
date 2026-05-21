@@ -9,8 +9,8 @@ HyperSonicAnalyzerEditor::HyperSonicAnalyzerEditor(HyperSonicAnalyzerProcessor& 
 
     minDbSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     minDbSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 70, 20);
-    minDbSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(0, 150, 255));
-    minDbSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    minDbSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::mediumspringgreen);
+    minDbSlider.setColour(juce::Slider::thumbColourId, juce::Colours::lightgrey);
     minDbSlider.setRange(-192.0, 0.0, 1.0);
     minDbSlider.setTextValueSuffix(" dB");
     minDbSlider.onValueChange = [this]()
@@ -30,8 +30,8 @@ HyperSonicAnalyzerEditor::HyperSonicAnalyzerEditor(HyperSonicAnalyzerProcessor& 
 
     maxDbSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     maxDbSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 70, 20);
-    maxDbSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colour(255, 150, 0));
-    maxDbSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    maxDbSlider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::mediumspringgreen);
+    maxDbSlider.setColour(juce::Slider::thumbColourId, juce::Colours::lightgrey);
     maxDbSlider.setRange(-192.0, 20.0, 1.0);
     maxDbSlider.setTextValueSuffix(" dB");
     maxDbSlider.onValueChange = [this]()
