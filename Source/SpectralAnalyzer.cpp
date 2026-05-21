@@ -179,12 +179,6 @@ void SpectralAnalyzer::drawFrequencyLabels(juce::Graphics& g, float width, float
         g.drawText(label, static_cast<int>(x) - 25, static_cast<int>(height) - 18, 50, 16,
                    juce::Justification::centred);
     }
-
-    float x = frequencyToX(nyquist, width, minFreq, maxFreq);
-    juce::String nyquistLabel = formatFrequencyShort(nyquist) + " (Nyquist)";
-    g.setColour(juce::Colours::cyan);
-    g.drawText(nyquistLabel, static_cast<int>(x) - 50, static_cast<int>(height) - 18, 100, 16,
-               juce::Justification::centred);
 }
 
 void SpectralAnalyzer::drawDbLabels(juce::Graphics& g, float /*width*/, float height)
@@ -242,9 +236,6 @@ void SpectralAnalyzer::drawCrosshair(juce::Graphics& g, float width, float heigh
 
     g.setColour(juce::Colour(40, 40, 50).withAlpha(0.9f));
     g.fillRoundedRectangle(boxX, boxY, textWidth, textHeight, 4.0f);
-
-    g.setColour(juce::Colours::cyan);
-    g.drawRoundedRectangle(boxX, boxY, textWidth, textHeight, 4.0f, 1.0f);
 
     g.setColour(juce::Colours::white);
     g.drawText(infoText, static_cast<int>(boxX), static_cast<int>(boxY),
