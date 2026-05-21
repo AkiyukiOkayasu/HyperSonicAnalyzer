@@ -5,12 +5,6 @@
 HyperSonicAnalyzerEditor::HyperSonicAnalyzerEditor(HyperSonicAnalyzerProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p), spectralAnalyzer(p)
 {
-    titleLabel.setText("HyperSonic Analyzer", juce::dontSendNotification);
-    titleLabel.setFont(juce::FontOptions(20.0f, juce::Font::bold));
-    titleLabel.setColour(juce::Label::textColourId, juce::Colours::cyan);
-    titleLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(titleLabel);
-
     addAndMakeVisible(spectralAnalyzer);
 
     minDbSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
@@ -73,9 +67,6 @@ void HyperSonicAnalyzerEditor::paint(juce::Graphics& g)
 void HyperSonicAnalyzerEditor::resized()
 {
     auto bounds = getLocalBounds();
-
-    auto titleArea = bounds.removeFromTop(40);
-    titleLabel.setBounds(titleArea);
 
     auto controlArea = bounds.removeFromBottom(120);
 

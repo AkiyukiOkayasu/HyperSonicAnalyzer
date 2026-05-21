@@ -102,33 +102,55 @@ juce::String SpectralAnalyzer::formatFrequency(float freq) const
     return juce::String(freq, 1) + " Hz";
 }
 
+juce::String SpectralAnalyzer::formatFrequencyShort(float freq) const
+{
+    if (freq >= 1000000.0f)
+    {
+        float val = freq / 1000000.0f;
+        return (val == std::floor(val)) ? juce::String(static_cast<int>(val)) + "M"
+                                        : juce::String(val, 1) + "M";
+    }
+    if (freq >= 1000.0f)
+    {
+        float val = freq / 1000.0f;
+        return (val == std::floor(val)) ? juce::String(static_cast<int>(val)) + "k"
+                                        : juce::String(val, 1) + "k";
+    }
+    return juce::String(static_cast<int>(freq));
+}
+
 void SpectralAnalyzer::drawGrid(juce::Graphics& g, float width, float height, float nyquist)
 {
-    g.setColour(juce::Colour(60, 60, 70));
-
     constexpr float minFreq = 10.0f;
     const float maxFreq = nyquist;
 
-    const std::array<float, 15> gridFreqs = {10,   20,    50,    100,   200,    500,    1000,  2000,
-                                             5000, 10000, 20000, 50000, 100000, 200000, 384000};
+    const std::array<float, 7> labelFreqs = {20, 100, 1000, 10000, 20000, 100000, 200000};
 
-    for (float freq : gridFreqs)
+    const std::array<float, 36> subFreqs = {
+        10,   30,   40,   50,   60,   70,   80,   90,   200,   300,  400,  500,
+        600,  700,  800,  900,  2000,  3000, 4000, 5000, 6000,  7000, 8000, 9000,
+        20000,30000,40000,50000,60000, 70000,80000,90000,300000,384000};
+
+    g.setColour(juce::Colour(35, 35, 45));
+    for (float freq : subFreqs)
     {
-        if (freq > nyquist)
-            break;
-
+        if (freq > nyquist || freq < minFreq)
+            continue;
         float x = frequencyToX(freq, width, minFreq, maxFreq);
         g.drawVerticalLine(static_cast<int>(x), 0.0f, height);
     }
 
-    float dbRange = maxDbValue - minDbValue;
-    float dbStep = 10.0f;
-    if (dbRange > 100.0f)
-        dbStep = 20.0f;
-    if (dbRange > 150.0f)
-        dbStep = 30.0f;
+    g.setColour(juce::Colour(60, 60, 70));
+    for (float freq : labelFreqs)
+    {
+        if (freq > nyquist)
+            break;
+        float x = frequencyToX(freq, width, minFreq, maxFreq);
+        g.drawVerticalLine(static_cast<int>(x), 0.0f, height);
+    }
 
-    for (float db = minDbValue; db <= maxDbValue; db += dbStep)
+    g.setColour(juce::Colour(35, 35, 45));
+    for (float db = 0.0f; db >= minDbValue; db -= 6.0f)
     {
         float y = dbToY(db, height);
         g.drawHorizontalLine(static_cast<int>(y), 0.0f, width);
@@ -152,14 +174,14 @@ void SpectralAnalyzer::drawFrequencyLabels(juce::Graphics& g, float width, float
             break;
 
         float x = frequencyToX(freq, width, minFreq, maxFreq);
-        juce::String label = formatFrequency(freq);
+        juce::String label = formatFrequencyShort(freq);
 
         g.drawText(label, static_cast<int>(x) - 25, static_cast<int>(height) - 18, 50, 16,
                    juce::Justification::centred);
     }
 
     float x = frequencyToX(nyquist, width, minFreq, maxFreq);
-    juce::String nyquistLabel = formatFrequency(nyquist) + " (Nyquist)";
+    juce::String nyquistLabel = formatFrequencyShort(nyquist) + " (Nyquist)";
     g.setColour(juce::Colours::cyan);
     g.drawText(nyquistLabel, static_cast<int>(x) - 50, static_cast<int>(height) - 18, 100, 16,
                juce::Justification::centred);
@@ -170,19 +192,11 @@ void SpectralAnalyzer::drawDbLabels(juce::Graphics& g, float /*width*/, float he
     g.setColour(juce::Colours::lightgrey);
     g.setFont(10.0f);
 
-    float dbRange = maxDbValue - minDbValue;
-    float dbStep = 10.0f;
-    if (dbRange > 100.0f)
-        dbStep = 20.0f;
-    if (dbRange > 150.0f)
-        dbStep = 30.0f;
-
-    for (float db = minDbValue; db <= maxDbValue; db += dbStep)
+    for (float db = 0.0f; db >= minDbValue; db -= 6.0f)
     {
         float y = dbToY(db, height);
-        juce::String label = juce::String(static_cast<int>(db)) + " dB";
-
-        g.drawText(label, 2, static_cast<int>(y) - 8, 50, 16, juce::Justification::left);
+        g.drawText(juce::String(static_cast<int>(db)), 2, static_cast<int>(y) - 8, 30, 16,
+                   juce::Justification::left);
     }
 }
 

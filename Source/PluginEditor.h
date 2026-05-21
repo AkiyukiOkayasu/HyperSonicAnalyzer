@@ -27,8 +27,5 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> minDbAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> maxDbAttachment;
 
-    // タイトルラベル
-    juce::Label titleLabel;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HyperSonicAnalyzerEditor)
 };

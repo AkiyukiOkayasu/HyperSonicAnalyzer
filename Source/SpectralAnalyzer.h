@@ -59,6 +59,7 @@ private:
 
     // 周波数文字列のフォーマット
     juce::String formatFrequency(float freq) const;
+    juce::String formatFrequencyShort(float freq) const;
 
     // 周波数からビンインデックスを取得
     int frequencyToBin(float frequency, float sampleRate) const;
