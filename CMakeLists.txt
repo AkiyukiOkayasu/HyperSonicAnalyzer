@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
     JUCE
     GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-    GIT_TAG 8.0.4
+    GIT_TAG 8.0.13
 )
 
 FetchContent_MakeAvailable(JUCE)
@@ -36,30 +36,30 @@ juce_add_plugin(HyperSonicAnalyzer
 # ソースファイル
 target_sources(HyperSonicAnalyzer
     PRIVATE
-        Source/PluginProcessor.cpp
-        Source/PluginProcessor.h
-        Source/PluginEditor.cpp
-        Source/PluginEditor.h
-        Source/SpectralAnalyzer.cpp
-        Source/SpectralAnalyzer.h
+    Source/PluginProcessor.cpp
+    Source/PluginProcessor.h
+    Source/PluginEditor.cpp
+    Source/PluginEditor.h
+    Source/SpectralAnalyzer.cpp
+    Source/SpectralAnalyzer.h
 )
 
 # JUCE モジュール
 target_compile_definitions(HyperSonicAnalyzer
     PUBLIC
-        JUCE_WEB_BROWSER=0
-        JUCE_USE_CURL=0
-        JUCE_VST3_CAN_REPLACE_VST2=0
+    JUCE_WEB_BROWSER=0
+    JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 target_link_libraries(HyperSonicAnalyzer
     PRIVATE
-        juce::juce_audio_utils
-        juce::juce_dsp
+    juce::juce_audio_utils
+    juce::juce_dsp
     PUBLIC
-        juce::juce_recommended_config_flags
-        juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_lto_flags
+    juce::juce_recommended_warning_flags
 )
 
 # Additional strict warnings for our source files
