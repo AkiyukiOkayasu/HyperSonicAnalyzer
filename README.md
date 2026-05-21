@@ -13,7 +13,8 @@
 
 ## スクリーンショット
 
-<img width="1112" height="765" alt="Screenshot 2026-05-07 at 17 11 30" src="https://github.com/user-attachments/assets/dbdeb8ac-f895-4517-a140-84f8e43f7d24" />
+<img width="1614" height="1071" alt="Screenshot 2026-05-21 at 15 43 20" src="https://github.com/user-attachments/assets/d9e0bc57-e818-420b-b2dc-ec084d2c0656" />
+
 
 ## 動作環境
 
